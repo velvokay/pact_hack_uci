@@ -33,21 +33,11 @@
         // parameter when you first load the API. For example:
         // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-        var contentString = '<div id="content">'+
-                '<div id="siteNotice">'+
-                '</div>'+
-                '<h1 id="firstHeading" class="firstHeading">Starbucks (campus)</h1>'+
-                '<div id="bodyContent">'+
-                '<p><b>Address: </b> 712 Campus Drive, Irvine <br />' +
-                '<b>Activity: </b> Very busy right now <br />'+
-                '<b>Comments: </b>  <br />'+
-                '</div>'+
-                '</div>';
-
         var map;
-        var infowindow;
         var markers = [];
         var mapCenter;
+
+        var previousInfoWindow = null;
 
         function initMap() {
             mapCenter = {lat: 33.684567, lng: -117.826505};
@@ -61,9 +51,6 @@
                 navigator.geolocation.getCurrentPosition(getLocSuccess, getLocFail);
             }
 
-            infowindow = new google.maps.InfoWindow({
-                content: contentString
-            });
             updateServices();
         }
 
@@ -119,7 +106,13 @@
         }
 
         function createMarker(place) {
-            var placeLoc = place.geometry.location;
+            function prettyTypeName() {
+                let mainType = place.types[0];
+                mainType = mainType.split('_').map(x => x[0].toUpperCase() + x.substr(1)).join(' ');
+
+                return mainType;
+            }
+
             var marker = new google.maps.Marker({
                 map: map,
                 position: place.geometry.location
@@ -127,8 +120,20 @@
 
             markers.push(marker);
 
+            let infowindow = new google.maps.InfoWindow({
+                content: '<h5>' + place.name + '</h5>' +
+                    prettyTypeName() +
+                    '<br><br><p>Busy: [placeholder]</p>'
+            });
+
             google.maps.event.addListener(marker, 'click', function() {
+                if (previousInfoWindow != null) {
+                    google.maps.event.clearInstanceListeners(previousInfoWindow);
+                    previousInfoWindow.close();
+                }
+
                 infowindow.open(map, marker);
+                previousInfoWindow = infowindow;
             });
         }
     </script>
