@@ -46,24 +46,50 @@
 
         var map;
         var infowindow;
+        var markers = [];
+        var mapCenter;
 
         function initMap() {
-            var pyrmont = {lat: -33.867, lng: 151.195};
+            mapCenter = {lat: 33.684567, lng: -117.826505};
 
             map = new google.maps.Map(document.getElementById('map'), {
-                center: pyrmont,
+                center: mapCenter,
                 zoom: 15
             });
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    if (position !== undefined) {
+                        mapCenter = {lat: position.coords.latitude, lng: position.coords.longitude};
+                        map.setCenter(mapCenter);
+
+                        clearMarkers();
+                        updateServices();
+                    }
+                });
+            }
 
             infowindow = new google.maps.InfoWindow({
                 content: contentString
             });
+            updateServices();
+        }
+
+        function updateServices() {
             var service = new google.maps.places.PlacesService(map);
             service.nearbySearch({
-                location: pyrmont,
+                location: mapCenter,
                 radius: 500,
                 type: ['store']
             }, callback);
+        }
+
+        function clearMarkers() {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+
+            markers.length = 0;
         }
 
         function callback(results, status) {
@@ -81,8 +107,9 @@
                 position: place.geometry.location
             });
 
-            google.maps.event.addListener(marker, 'click', function() {
+            markers.push(marker);
 
+            google.maps.event.addListener(marker, 'click', function() {
                 infowindow.open(map, marker);
             });
         }
