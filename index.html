@@ -33,22 +33,13 @@
         // parameter when you first load the API. For example:
         // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-        var contentString = '<div id="content">'+
-                '<div id="siteNotice">'+
-                '</div>'+
-                '<h1 id="firstHeading" class="firstHeading">Starbucks (campus)</h1>'+
-                '<div id="bodyContent">'+
-                '<p><b>Address: </b> 712 Campus Drive, Irvine <br />' +
-                '<b>Activity: </b> Very busy right now <br />'+
-                '<b>Comments: </b>  <br />'+
-                '</div>'+
-                '</div>';
-
         var map;
-        var infowindow;
         var markers = [];
         var mapCenter;
         var howBusy = 1;
+
+        var previousInfoWindow = null;
+        var desiredPlaceTypes = ['bar', 'library', 'cafe', 'gym', 'meal_delivery', 'meal_takeaway', 'park', 'restaurant'];
 
         function initMap() {
             mapCenter = {lat: 33.684567, lng: -117.826505};
@@ -62,9 +53,6 @@
                 navigator.geolocation.getCurrentPosition(getLocSuccess, getLocFail);
             }
 
-            infowindow = new google.maps.InfoWindow({
-                content: contentString
-            });
             updateServices();
         }
 
@@ -99,7 +87,6 @@
             service.nearbySearch({
                 location: mapCenter,
                 radius: 500,
-                type: ['store']
             }, callback);
         }
 
@@ -114,13 +101,26 @@
         function callback(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i]);
+                    place = results[i];
+
+                    for (var x = 0; x < place.types.length; x++) {
+                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1) {
+                            createMarker(place);
+                            break;
+                        }
+                    }
                 }
             }
         }
 
         function createMarker(place) {
-            var placeLoc = place.geometry.location;
+            function prettyTypeName() {
+                let mainType = place.types[0];
+                mainType = mainType.split('_').map(x => x[0].toUpperCase() + x.substr(1)).join(' ');
+
+                return mainType;
+            }
+
             var marker = new google.maps.Marker({
                 map: map,
                 position: place.geometry.location
@@ -128,8 +128,20 @@
 
             markers.push(marker);
 
+            let infowindow = new google.maps.InfoWindow({
+                content: '<h5>' + place.name + '</h5>' +
+                    prettyTypeName() +
+                    '<br><br><p>Busy: [placeholder]</p>'
+            });
+
             google.maps.event.addListener(marker, 'click', function() {
+                if (previousInfoWindow != null) {
+                    google.maps.event.clearInstanceListeners(previousInfoWindow);
+                    previousInfoWindow.close();
+                }
+
                 infowindow.open(map, marker);
+                previousInfoWindow = infowindow;
             });
         }
 
@@ -176,15 +188,17 @@
                     </div>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
         </div>
     </nav>
 
     <div class="container">
-        <h3>Map view</h3>
+        <div>
+            <h3 style="float:left;width:150px">Map view </h3>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:30px;width:250px">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="height:36px">Search</button>
+            </form>
+        </div>
         <div id="map"></div>
 
         <script async defer
