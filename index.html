@@ -42,8 +42,11 @@
         var desiredPlaceTypes = ['bar', 'library', 'cafe', 'gym', 'meal_delivery', 'meal_takeaway', 'park', 'restaurant'];
         var currentName;
 
+        var userLocation;
+
         function initMap() {
             mapCenter = { lat: 33.684567, lng: -117.826505 };
+            userLocation = mapCenter; // as a 3rd fallback; it should be replaced by getLocSuccess or getLocFail functions
 
             map = new google.maps.Map(document.getElementById('map'), {
                 center: mapCenter,
@@ -60,6 +63,8 @@
         function getLocSuccess(position) {
             if (position !== undefined) {
                 mapCenter = { lat: position.coords.latitude, lng: position.coords.longitude };
+                userLocation = mapCenter;
+
                 updateMapAfterCenterChange();
             }
             else {
@@ -71,6 +76,8 @@
             $.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDfDpv9C783SlX_Vvm4roqyvVBJU4W_5ZE", function (data) {
                 if (data.location !== undefined && 'lat' in data.location) {
                     mapCenter = data.location;
+                    userLocation = mapCenter;
+
                     updateMapAfterCenterChange();
                 }
             })
