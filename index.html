@@ -36,10 +36,11 @@
         var map;
         var markers = [];
         var mapCenter;
-        var howBusy = 1;
+        var howBusy = 'Not very busy';
 
         var previousInfoWindow = null;
         var desiredPlaceTypes = ['bar', 'library', 'cafe', 'gym', 'meal_delivery', 'meal_takeaway', 'park', 'restaurant'];
+        var currentName;
 
         function initMap() {
             mapCenter = {lat: 33.684567, lng: -117.826505};
@@ -128,31 +129,36 @@
 
             markers.push(marker);
 
-            let infowindow = new google.maps.InfoWindow({
-                content: '<h5>' + place.name + '</h5>' +
+            getAverageBusyRating(place.name).then(function(r) {
+                let infowindow = new google.maps.InfoWindow({
+                    content: '<h5>' + place.name + '</h5>' +
                     prettyTypeName() +
-                    '<br><br><p>Busy: [placeholder]</p>'
+                    '<br><br><p>Activity: ' + r + '</p>'
+                });
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    currentName = place.name;
+                    if (previousInfoWindow != null) {
+                        google.maps.event.clearInstanceListeners(previousInfoWindow);
+                        previousInfoWindow.close();
+                    }
+
+                    infowindow.open(map, marker);
+                    previousInfoWindow = infowindow;
+                });
             });
 
-            google.maps.event.addListener(marker, 'click', function() {
-                if (previousInfoWindow != null) {
-                    google.maps.event.clearInstanceListeners(previousInfoWindow);
-                    previousInfoWindow.close();
-                }
 
-                infowindow.open(map, marker);
-                previousInfoWindow = infowindow;
-            });
         }
 
         function nBusyFunc() {
-            howBusy = 1;
+            addBusyRating(currentName, 1);
         }
         function mBusyFunc() {
-            howBusy = 2;
+            addBusyRating(currentName, 2);
         }
         function vBusyFunc() {
-            howBusy = 3;
+            addBusyRating(currentName, 3);
         }
     </script>
 </head>
