@@ -2,6 +2,13 @@ function currentTimestamp() {
     return Math.round(+new Date() / 1000);
 }
 
+function deletePath(path) {
+    let updates = {};
+    updates[path] = null;
+
+    firebase.database().ref().update(updates);
+}
+
 function addBusyRating(place, busy_rating) {
     const timestamp = currentTimestamp();
 
@@ -20,6 +27,12 @@ function addBusyRating(place, busy_rating) {
     return firebase.database().ref().update(updates);
 }
 
+/*
+ * getAverageBusyRating('placenameorid').then(function(r) {
+ *     // r is rating
+ * });
+ */
+
 function getAverageBusyRating(place) {
     const maxRatingAgeAllowedMinutes = 15; // change this if necessary
 
@@ -33,10 +46,7 @@ function getAverageBusyRating(place) {
             const maxTime = data.timestamp + (maxRatingAgeAllowedMinutes * 60);
             if (currentTimestamp() > maxTime) {
                 // delete it, too old of a rating to be relevant
-                let updates = {};
-                updates['/busy-ratings/' + place + '/' + uniqueKey] = null;
-
-                firebase.database().ref().update(updates);
+                deletePath('/busy-ratings/' + place + '/' + uniqueKey);
             }
             else {
                 ratingsSum += data.rating;
@@ -44,7 +54,11 @@ function getAverageBusyRating(place) {
             }
         });
 
-        return ratingsSum / numRatings;
+        const avgRating = ratingsSum / numRatings;
+        if (isNaN(avgRating)) {
+            return 0;
+        }
+        return avgRating;
     });
 }
 
