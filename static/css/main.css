@@ -1,0 +1,8 @@
+body {
+    padding-top: 5rem;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+}
