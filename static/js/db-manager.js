@@ -9,22 +9,28 @@ function deletePath(path) {
     firebase.database().ref().update(updates);
 }
 
-function addBusyRating(place, busy_rating) {
-    const timestamp = currentTimestamp();
-
-    const postData = {
-        timestamp: timestamp,
-        rating: busy_rating
-    };
+function genericAddData(place, dbKey, postData) {
+    postData['timestamp'] = currentTimestamp();
 
     // Get a key for a new Post.
-    var newPostKey = firebase.database().ref().child('busy-ratings').push().key;
+    var newPostKey = firebase.database().ref().child(dbKey).push().key;
 
     // Write the new post's data simultaneously in the posts list and the user's post list.
     var updates = {};
-    updates['/busy-ratings/' + place + '/' + newPostKey] = postData;
+    updates['/' + dbKey + '/' + place + '/' + newPostKey] = postData;
 
     return firebase.database().ref().update(updates);
+}
+
+function addBusyRating(place, busy_rating) {
+    genericAddData(place, 'busy-ratings', { rating: busy_rating });
+}
+
+function addComment(place, user_name, comment) {
+    genericAddData(place, 'comments', {
+        name: user_name,
+        comment: comment
+    });
 }
 
 /*
@@ -42,7 +48,7 @@ function getAverageBusyRating(place) {
         let ratingsSum = 0;
         let numRatings = 0;
 
-        $.each(snapshotData, function(uniqueKey, data) {
+        $.each(snapshotData, function (uniqueKey, data) {
             const maxTime = data.timestamp + (maxRatingAgeAllowedMinutes * 60);
             if (currentTimestamp() > maxTime) {
                 // delete it, too old of a rating to be relevant
@@ -59,6 +65,28 @@ function getAverageBusyRating(place) {
             return 0;
         }
         return avgRating;
+    });
+}
+
+function getComments(place) {
+    const maxRatingAgeAllowedDays = 30; // change this if necessary
+
+    return firebase.database().ref('/comments/' + place).once('value').then(function(snapshot) {
+        const snapshotData = snapshot.val();
+        let commentData = [];
+
+        $.each(snapshotData, function (uniqueKey, data) {
+            const maxTime = data.timestamp + (maxRatingAgeAllowedDays * 24 * 60 * 60);
+            if (currentTimestamp() > maxTime) {
+                // delete it, too old
+                deletePath('/comments/' + place + '/' + uniqueKey);
+            }
+            else {
+                commentData.push(data);
+            }
+        });
+
+        return commentData;
     });
 }
 
