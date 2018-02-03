@@ -38,6 +38,7 @@
         var mapCenter;
 
         var previousInfoWindow = null;
+        var desiredPlaceTypes = ['bar', 'library', 'cafe', 'gym', 'meal_delivery', 'meal_takeaway', 'park', 'restaurant'];
 
         function initMap() {
             mapCenter = {lat: 33.684567, lng: -117.826505};
@@ -85,7 +86,6 @@
             service.nearbySearch({
                 location: mapCenter,
                 radius: 500,
-                type: ['store']
             }, callback);
         }
 
@@ -100,7 +100,14 @@
         function callback(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i]);
+                    place = results[i];
+
+                    for (var x = 0; x < place.types.length; x++) {
+                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1) {
+                            createMarker(place);
+                            break;
+                        }
+                    }
                 }
             }
         }
