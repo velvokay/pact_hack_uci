@@ -223,22 +223,86 @@
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
         </script>
     </div>
+    
+    <div style = "color:black">
+      <center>
+      <h4>Place of interest </h4>
+          <b>Rate current activity:</b>
+          <!-- Options for rating business
+          <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
+          <button id= "mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
+          <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
+-->
+          <div id="rating">
+              <div class="slidecontainer">
+                  <input type="range" min="1" max="5" value="3" class="slider" id="myRange">
+                  <style>
+                      .slidecontainer {
+                          width: 275px; /* Width of the outside container */
+                      }
 
-    <div style="color:black">
-        <center>
-            <h4 id="current-place">No Place Selected</h4>
-            <b>Rate current activity:</b>
-            <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
-            <button id="mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
-            <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
+                      /* The slider itself */
+                      .slider {
+                          -webkit-appearance: none;  /* Override default CSS styles */
+                          appearance: none;
+                          width: 100%; /* Full-width */
+                          height: 14px; /* Specified height */
+                          background: #f4f4f4; /* Grey background */
+                          outline: none; /* Remove outline */
+                          opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+                          -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+                          transition: opacity .2s;
+                      }
 
-            <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
-            <hr />
-            <p>$$$$$
-                <br /> eating faces
-                <br /> a hyperlink that displays the adress and redirects them to googlemaps
-                <br />
-            </p>
+                      /* Mouse-over effects */
+                      .slider:hover {
+                          opacity: 1; /* Fully shown on mouse-over */
+                      }
+
+                      /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+                      .slider::-webkit-slider-thumb {
+                          -webkit-appearance: none; /* Override default look */
+                          appearance: none;
+                          width: 14px; /* Set a specific slider handle width */
+                          height: 25px; /* Slider handle height */
+                          background: #ffc447; /* Orange background */
+                          cursor: pointer; /* Cursor on hover */
+                      }
+
+                      .slider::-moz-range-thumb {
+                          width: 25px; /* Set a specific slider handle width */
+                          height: 25px; /* Slider handle height */
+                          background: #4CAF50; /* Green background */
+                          cursor: pointer; /* Cursor on hover */
+                      }
+                  </style>
+              </div>
+              <div id="sendbutton">
+                  <button class="button button1">SEND</button>
+                  <style>
+                      .button {
+                          display: block;
+                          width: 80px;
+                          height: 30px;
+                          border: none;
+                          background-color: #5d9afc; /* Blue color */
+                          /*padding: 5px 28px;*/
+                          font-size: 18px;
+                          font-family: Helvetica;
+                          text-decoration-color: #3c763d;
+                          cursor: pointer;
+                          text-align: center;
+                      }
+                  </style>
+              </div>
+          </div>
+
+      <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
+      <hr />
+        <p>$$$$$<br />
+        eating faces<br />
+        a hyperlink that displays the adress and redirects them to googlemaps<br />
+      </p>
 
         </center>
 
