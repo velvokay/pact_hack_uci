@@ -33,6 +33,17 @@
         // parameter when you first load the API. For example:
         // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
+        var contentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<h1 id="firstHeading" class="firstHeading">Starbucks (campus)</h1>'+
+                '<div id="bodyContent">'+
+                '<p><b>Address: </b> 712 Campus Drive, Irvine <br />' +
+                '<b>Activity: </b> Very busy right now <br />'+
+                '<b>Comments: </b>  <br />'+
+                '</div>'+
+                '</div>';
+
         var map;
         var infowindow;
 
@@ -44,7 +55,9 @@
                 zoom: 15
             });
 
-            infowindow = new google.maps.InfoWindow();
+            infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
             var service = new google.maps.places.PlacesService(map);
             service.nearbySearch({
                 location: pyrmont,
@@ -69,8 +82,8 @@
             });
 
             google.maps.event.addListener(marker, 'click', function() {
-                infowindow.setContent(place.name);
-                infowindow.open(map, this);
+
+                infowindow.open(map, marker);
             });
         }
     </script>
