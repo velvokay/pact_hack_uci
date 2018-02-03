@@ -58,20 +58,38 @@
             });
 
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    if (position !== undefined) {
-                        mapCenter = {lat: position.coords.latitude, lng: position.coords.longitude};
-                        map.setCenter(mapCenter);
-
-                        clearMarkers();
-                        updateServices();
-                    }
-                });
+                navigator.geolocation.getCurrentPosition(getLocSuccess, getLocFail);
             }
 
             infowindow = new google.maps.InfoWindow({
                 content: contentString
             });
+            updateServices();
+        }
+
+        function getLocSuccess(position) {
+            if (position !== undefined) {
+                mapCenter = {lat: position.coords.latitude, lng: position.coords.longitude};
+                updateMapAfterCenterChange();
+            }
+            else {
+                getLocFail(false);
+            }
+        }
+
+        function getLocFail(error) {
+            $.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDfDpv9C783SlX_Vvm4roqyvVBJU4W_5ZE", function(data) {
+                if (data.location !== undefined && 'lat' in data.location) {
+                    mapCenter = data.location;
+                    updateMapAfterCenterChange();
+                }
+            })
+        }
+
+        function updateMapAfterCenterChange() {
+            map.setCenter(mapCenter);
+
+            clearMarkers();
             updateServices();
         }
 
@@ -162,23 +180,20 @@
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
         </script>
     </div>
-<<<<<<< HEAD
 
-=======
     <div style = "color:black">
       <center>
       <h4>Place of interest </h4>
       <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
-      <center>
-      <ul>
-        <li>$$$$$</li>
-        <li>eating faces</li>
-        <li>a hyperlink that displays the adress and redirects them to googlemaps</li>
-      </ul>
-    </center>
+      <hr />
+        <p>$$$$$<br />
+        eating faces<br />
+        a hyperlink that displays the adress and redirects them to googlemaps<br />
+      </p>
+
     </center>
     </div>
->>>>>>> master
+
 </body>
 
 </html>
