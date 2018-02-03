@@ -48,6 +48,7 @@
         var infowindow;
         var markers = [];
         var mapCenter;
+        var howBusy = 1;
 
         function initMap() {
             mapCenter = {lat: 33.684567, lng: -117.826505};
@@ -131,6 +132,16 @@
                 infowindow.open(map, marker);
             });
         }
+
+        function nBusyFunc() {
+            howBusy = 1;
+        }
+        function mBusyFunc() {
+            howBusy = 2;
+        }
+        function vBusyFunc() {
+            howBusy = 3;
+        }
     </script>
 </head>
 
@@ -184,6 +195,11 @@
     <div style = "color:black">
       <center>
       <h4>Place of interest </h4>
+          <b>Rate current activity:</b>
+          <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
+          <button id= "mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
+          <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
+
       <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
       <hr />
         <p>$$$$$<br />
@@ -192,6 +208,7 @@
       </p>
 
     </center>
+
     </div>
 
 </body>
