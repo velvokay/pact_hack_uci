@@ -43,7 +43,7 @@
         var currentName;
 
         function initMap() {
-            mapCenter = {lat: 33.684567, lng: -117.826505};
+            mapCenter = { lat: 33.684567, lng: -117.826505 };
 
             map = new google.maps.Map(document.getElementById('map'), {
                 center: mapCenter,
@@ -59,7 +59,7 @@
 
         function getLocSuccess(position) {
             if (position !== undefined) {
-                mapCenter = {lat: position.coords.latitude, lng: position.coords.longitude};
+                mapCenter = { lat: position.coords.latitude, lng: position.coords.longitude };
                 updateMapAfterCenterChange();
             }
             else {
@@ -68,7 +68,7 @@
         }
 
         function getLocFail(error) {
-            $.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDfDpv9C783SlX_Vvm4roqyvVBJU4W_5ZE", function(data) {
+            $.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDfDpv9C783SlX_Vvm4roqyvVBJU4W_5ZE", function (data) {
                 if (data.location !== undefined && 'lat' in data.location) {
                     mapCenter = data.location;
                     updateMapAfterCenterChange();
@@ -129,14 +129,14 @@
 
             markers.push(marker);
 
-            getAverageBusyRating(place.name).then(function(r) {
+            getAverageBusyRating(place.name).then(function (r) {
                 let infowindow = new google.maps.InfoWindow({
                     content: '<h5>' + place.name + '</h5>' +
-                    prettyTypeName() +
-                    '<br><br><p>Activity: ' + r + '</p>'
+                        prettyTypeName() +
+                        '<br><br><p>Activity: ' + r + '</p>'
                 });
 
-                google.maps.event.addListener(marker, 'click', function() {
+                google.maps.event.addListener(marker, 'click', function () {
                     currentName = place.name;
                     if (previousInfoWindow != null) {
                         google.maps.event.clearInstanceListeners(previousInfoWindow);
@@ -202,32 +202,32 @@
             <h3 style="float:left;width:150px">Map view </h3>
             <form class="form-inline my-2 my-lg-0">
                 <input class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
-                <button class="btn btn-outline-warning btn-sm" type="submit"">Search</button>
+                <button class="btn btn-outline-warning btn-sm" type="submit">Search</button>
             </form>
         </div>
         <div id="map"></div>
 
-        <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
         </script>
     </div>
 
-    <div style = "color:black">
-      <center>
-      <h4>Place of interest </h4>
-          <b>Rate current activity:</b>
-          <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
-          <button id= "mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
-          <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
+    <div style="color:black">
+        <center>
+            <h4>Place of interest </h4>
+            <b>Rate current activity:</b>
+            <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
+            <button id="mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
+            <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
 
-      <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
-      <hr />
-        <p>$$$$$<br />
-        eating faces<br />
-        a hyperlink that displays the adress and redirects them to googlemaps<br />
-      </p>
+            <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
+            <hr />
+            <p>$$$$$
+                <br /> eating faces
+                <br /> a hyperlink that displays the adress and redirects them to googlemaps
+                <br />
+            </p>
 
-    </center>
+        </center>
 
     </div>
 
