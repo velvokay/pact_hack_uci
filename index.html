@@ -44,6 +44,14 @@
 
         var userLocation;
 
+        $(document).ready(function() {
+            $('#gmap-link').click(function() {
+                if ($('#gmap-link').attr('href') == '#') {
+                    alert('There is no place selected to open in Google Maps.');
+                }
+            });
+        });
+
         function initMap() {
             mapCenter = { lat: 33.684567, lng: -117.826505 };
             userLocation = mapCenter; // as a 3rd fallback; it should be replaced by getLocSuccess or getLocFail functions
@@ -150,11 +158,18 @@
                         previousInfoWindow.close();
                     }
 
-                    infowindow.open(map, marker);
+                    infowindow.open(map, marker);        
+
                     $('#current-place').text(currentName);
+
+                    $('#gmap-link').attr('target', '_blank');
+                    $('#gmap-link').attr('href', 'https://www.google.com/maps/search/' + encodeURIComponent(currentName) + '/');
 
                     google.maps.event.addListener(infowindow, 'closeclick', function() {
                         $('#current-place').text('No Place Selected');
+
+                        $('#gmap-link').removeAttr('target');
+                        $('#gmap-link').attr('href', '#');
                     });
 
                     previousInfoWindow = infowindow;
@@ -301,7 +316,7 @@
       <hr />
         <p>$$$$$<br />
         eating faces<br />
-        a hyperlink that displays the adress and redirects them to googlemaps<br />
+        <a href="#" id="gmap-link">View on Google Maps</a>
       </p>
 
         </center>
