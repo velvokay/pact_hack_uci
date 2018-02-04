@@ -315,6 +315,17 @@
                 alert('No place is selected to rate.');
             }
         }
+
+        function getTagCheckboxStates() {
+            let allTagTypes = ['quiet', 'loud', 'ac', 'heat', 'pet_friendly', 'outdoor_seating'];
+            let checkedStates = {};
+
+            $.each(allTagTypes, function(i, tag) {
+                checkedStates[tag] = $('#' + tag).is(':checked');
+            })
+
+            return checkedStates;
+        }
     </script>
 </head>
 
@@ -524,32 +535,32 @@
                   <h6>Check all that apply about this location:</h6>
                   <div style="width:225px;">
                       <label class="container">Quiet
-                          <input type="checkbox">
+                          <input type="checkbox" id="quiet">
                           <span class="checkmark"></span>
                       </label>
 
                       <label class="container">Loud
-                          <input type="checkbox">
+                          <input type="checkbox" id="loud">
                           <span class="checkmark"></span>
                       </label>
 
                       <label class="container">Air conditioned
-                          <input type="checkbox">
+                          <input type="checkbox" id="ac">
                           <span class="checkmark"></span>
                       </label>
 
                       <label class="container">Heated
-                          <input type="checkbox">
+                          <input type="checkbox" id="heat">
                           <span class="checkmark"></span>
                       </label>
 
                       <label class="container">Pet-friendly
-                          <input type="checkbox">
+                          <input type="checkbox" id="pet_friendly">
                           <span class="checkmark"></span>
                       </label>
 
                       <label class="container">Outdoor-seating
-                          <input type="checkbox">
+                          <input type="checkbox" id="outdoor_seating">
                           <span class="checkmark"></span>
                       </label>
                   </div>
