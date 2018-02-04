@@ -50,11 +50,37 @@
             lng: null
         };
 
+        var usingSearchQuery = false;
+        var lastSearchTypeWasQuery = false;
+        var lastSearchQuery;
+
         $(document).ready(function() {
             $('#gmap-link').click(function() {
                 if ($('#gmap-link').attr('href') == '#') {
                     alert('There is no place selected to open in Google Maps.');
                 }
+            });
+
+            $('#search-submit-btn').click(function() {
+                let searchQuery = $('#search-location').val().trim();
+                if (searchQuery.length > 0) {
+                    clearMarkers();
+                    updateServicesWithSearch(searchQuery);
+                }
+            });
+
+            $('#search-location').on('keypress', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode == 13) { // enter key is pressed
+                    $('#search-submit-btn').click();
+                }
+            });
+
+            $('#reset-btn').click(function() {
+                $('#search-location').val('');
+
+                lastSearchTypeWasQuery = false;
+                updateMapAfterCenterChange();
             });
         });
 
@@ -104,14 +130,35 @@
 
         function updateMapAfterCenterChange() {
             clearMarkers();
-            updateServices();
+
+            if (lastSearchTypeWasQuery) {
+                updateServicesWithSearch(lastSearchQuery);
+            }
+            else {
+                updateServices();
+            }
         }
 
         function updateServices() {
+            usingSearchQuery = false;
+            lastSearchTypeWasQuery = false;
+
             var service = new google.maps.places.PlacesService(map);
             service.nearbySearch({
                 location: mapCenter,
                 radius: 500,
+            }, callback);
+        }
+
+        function updateServicesWithSearch(searchQuery) {
+            usingSearchQuery = true;
+            lastSearchTypeWasQuery = true;
+            lastSearchQuery = searchQuery;
+
+            var service = new google.maps.places.PlacesService(map);
+            service.textSearch({
+                query: searchQuery,
+                location: map.getCenter()
             }, callback);
         }
 
@@ -129,7 +176,7 @@
                     place = results[i];
 
                     for (var x = 0; x < place.types.length; x++) {
-                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1) {
+                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1 || usingSearchQuery) {
                             createMarker(place);
                             break;
                         }
@@ -263,10 +310,12 @@
     <div class="container">
         <div>
             <h3 style="float:left;width:150px">Map view </h3>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
-                <button class="btn btn-outline-warning btn-sm" type="submit">Search</button>
-            </form>
+            <div class="form-inline my-2 my-lg-0">
+                <input id="search-location" class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
+                <button id="search-submit-btn" class="btn btn-outline-warning btn-sm">Search</button>
+                &nbsp;
+                <button id="reset-btn" class="btn btn-outline-warning btn-sm">Reset Map</button>
+            </div>
         </div>
         <div id="map"></div>
 
