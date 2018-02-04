@@ -9,11 +9,16 @@ function deletePath(path) {
     firebase.database().ref().update(updates);
 }
 
-function genericAddData(place, dbKey, postData) {
-    postData['timestamp'] = currentTimestamp();
+function genericAddData(place, dbKey, postData, presetPostKey = null, addTimestamp = true) {
+    if (addTimestamp) {
+        postData['timestamp'] = currentTimestamp();
+    }
 
     // Get a key for a new Post.
     var newPostKey = firebase.database().ref().child(dbKey).push().key;
+    if (presetPostKey != null) {
+        newPostKey = presetPostKey;
+    }
 
     // Write the new post's data simultaneously in the posts list and the user's post list.
     var updates = {};
@@ -26,10 +31,22 @@ function addBusyRating(place, busy_rating) {
     genericAddData(place, 'busy-ratings', { rating: busy_rating });
 }
 
-function addComment(place, user_name, comment) {
-    genericAddData(place, 'comments', {
-        name: user_name,
-        comment: comment
+/*
+tags should be structured like:
+{
+    quiet: true,
+    loud: false,
+    ac: false,
+    heat: false,
+    pet_friendly: false,
+    outdoor_seating: false
+}
+*/
+function addTags(place, tags) {
+    $.each(tags, function(tag, value) {
+        if (value) {
+            genericAddData(place, 'tags', value, tag, false);
+        }
     });
 }
 
@@ -68,25 +85,33 @@ function getAverageBusyRating(place) {
     });
 }
 
-function getComments(place) {
-    const maxRatingAgeAllowedDays = 30; // change this if necessary
+/*
+Example call:
 
-    return firebase.database().ref('/comments/' + place).once('value').then(function(snapshot) {
+getTags('test-place-id').then(function(tagsData) {
+    console.log(tagsData);
+});
+
+returns an object similar to baseTagsValues variable below but with values properly set
+*/
+function getTags(place) {
+    let baseTagsValues = {
+        quiet: false,
+        loud: false,
+        ac: false,
+        heat: false,
+        pet_friendly: false,
+        outdoor_seating: false
+    };
+
+    return firebase.database().ref('/tags/' + place).once('value').then(function(snapshot) {
         const snapshotData = snapshot.val();
-        let commentData = [];
 
-        $.each(snapshotData, function (uniqueKey, data) {
-            const maxTime = data.timestamp + (maxRatingAgeAllowedDays * 24 * 60 * 60);
-            if (currentTimestamp() > maxTime) {
-                // delete it, too old
-                deletePath('/comments/' + place + '/' + uniqueKey);
-            }
-            else {
-                commentData.push(data);
-            }
+        $.each(snapshotData, function (tag, value) {
+            baseTagsValues[tag] = value;
         });
 
-        return commentData;
+        return baseTagsValues;
     });
 }
 
