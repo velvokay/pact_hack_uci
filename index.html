@@ -50,6 +50,10 @@
                     alert('There is no place selected to open in Google Maps.');
                 }
             });
+
+            $('#about-nav-item').click(function() {
+                alert('Created at HackUCI 2018 by:\nChristian Hernandez, Lily Pham, Alex Yakovlev, Weidi Zhang');
+            });
         });
 
         function initMap() {
@@ -204,8 +208,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="#" id="about-nav-item">About</a>
                 </li>
+                <!--
                 <li class="nav-item">
                     <a class="nav-link disabled" href="#">Disabled</a>
                 </li>
@@ -218,6 +223,7 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
+                -->
             </ul>
         </div>
     </nav>
