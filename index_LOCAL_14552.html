@@ -51,37 +51,11 @@
             lng: null
         };
 
-        var usingSearchQuery = false;
-        var lastSearchTypeWasQuery = false;
-        var lastSearchQuery;
-
         $(document).ready(function() {
             $('#gmap-link').click(function() {
                 if ($('#gmap-link').attr('href') == '#') {
                     alert('There is no place selected to open in Google Maps.');
                 }
-            });
-
-            $('#search-submit-btn').click(function() {
-                let searchQuery = $('#search-location').val().trim();
-                if (searchQuery.length > 0) {
-                    clearMarkers();
-                    updateServicesWithSearch(searchQuery);
-                }
-            });
-
-            $('#search-location').on('keypress', function(e) {
-                var keyCode = e.keyCode || e.which;
-                if (keyCode == 13) { // enter key is pressed
-                    $('#search-submit-btn').click();
-                }
-            });
-
-            $('#reset-btn').click(function() {
-                $('#search-location').val('');
-
-                lastSearchTypeWasQuery = false;
-                updateMapAfterCenterChange();
             });
         });
 
@@ -131,35 +105,14 @@
 
         function updateMapAfterCenterChange() {
             clearMarkers();
-
-            if (lastSearchTypeWasQuery) {
-                updateServicesWithSearch(lastSearchQuery);
-            }
-            else {
-                updateServices();
-            }
+            updateServices();
         }
 
         function updateServices() {
-            usingSearchQuery = false;
-            lastSearchTypeWasQuery = false;
-
             var service = new google.maps.places.PlacesService(map);
             service.nearbySearch({
                 location: mapCenter,
                 radius: 500,
-            }, callback);
-        }
-
-        function updateServicesWithSearch(searchQuery) {
-            usingSearchQuery = true;
-            lastSearchTypeWasQuery = true;
-            lastSearchQuery = searchQuery;
-
-            var service = new google.maps.places.PlacesService(map);
-            service.textSearch({
-                query: searchQuery,
-                location: map.getCenter()
             }, callback);
         }
 
@@ -177,7 +130,7 @@
                     place = results[i];
 
                     for (var x = 0; x < place.types.length; x++) {
-                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1 || usingSearchQuery) {
+                        if (desiredPlaceTypes.indexOf(place.types[x]) > -1) {
                             createMarker(place);
                             break;
                         }
@@ -249,26 +202,9 @@
                     $('#gmap-link').attr('target', '_blank');
                     $('#gmap-link').attr('href', 'https://www.google.com/maps/search/' + encodeURIComponent(currentName) + '/');
 
-                    if ('opening_hours' in place) {
-                        const isOpen = place.opening_hours.open_now;
-
-                        let statusText = 'Open';
-                        let statusColor = 'green';
-                        if (!isOpen) {
-                            statusText = 'Closed';
-                            statusColor = 'red';
-                        }
-                        
-                        $('#is-open-now').html('<span style="color: ' + statusColor + '">' + statusText + ' Now</span>');
-                    }
-                    else {
-                        $('#is-open-now').text('');
-                    }
-
                     google.maps.event.addListener(infowindow, 'closeclick', function() {
                         $('#current-place').text('No Place Selected');
 
-                        $('#is-open-now').text('');
                         $('#gmap-link').removeAttr('target');
                         $('#gmap-link').attr('href', '#');
 
@@ -317,7 +253,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top" style="background-color: #cc8451">
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -355,12 +291,10 @@
     <div class="container">
         <div>
             <h3 style="float:left;width:150px">Map view </h3>
-            <div class="form-inline my-2 my-lg-0">
-                <input id="search-location" class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
-                <button id="search-submit-btn" class="btn btn-outline-warning btn-sm">Search</button>
-                &nbsp;
-                <button id="reset-btn" class="btn btn-outline-warning btn-sm">Reset Map</button>
-            </div>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
+                <button class="btn btn-outline-warning btn-sm" type="submit">Search</button>
+            </form>
         </div>
         <div id="map"></div>
 
@@ -372,16 +306,16 @@
       <center>
         <br>
       <h4 id="current-place">No Place Selected</h4>
-      <p id="is-open-now"></p>
-      <h6>Price range:</h6>
+      <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
+      <h6>Price range: </h6>
       <h6>Busy level:</h6>
       <a href="#" id="gmap-link">View on Google Maps</a>
           <hr />
           <h4>Currently at this location? Give your input!</h4>
-          <h6>How busy is it currently?</h6>
-      </center>
+          <b>How busy is it currently:</b>
+
           <div id="rating">
-              <center>
+
               <div class="slidecontainer">
                   <input type="range" min="1" max="5" value="3" class="slider" id="myRange">
                   <style>
@@ -425,139 +359,34 @@
                       }
                   </style>
               </div>
-              </center>
-          </div>
-          <div id="checkboxes">
-              <style>
-                  /* Customize the label (the container) */
-                  .container {
-                      display: block;
-                      position: relative;
-                      padding-left: 30px;
-                      margin-bottom: 12px;
-                      cursor: pointer;
-                      font-size: 16px;
-                      -webkit-user-select: none;
-                      -moz-user-select: none;
-                      -ms-user-select: none;
-                      user-select: none;
-                  }
+              <div id="sendbutton">
+                  <button id="activityButton" class="button button3" type="submit" onclick="busyFunc()">Send</button>
+                  <style>
+                      .button {
+                          width: 80px;
+                          height: 26px;
+                          border: none;
+                          border-color: #5cb3fd;
+                          font-size: 16px;
+                          font-family: Helvetica;
+                          color: #5cb3fd;
+                          cursor: pointer;
+                          text-align: center;
+                          opacity: 0.7;
+                          transition: .2s;
+                      }
 
-                  /* Hide the browser's default checkbox */
-                  .container input {
-                      position: absolute;
-                      opacity: 0;
-                      cursor: pointer;
-                  }
+                      .button:hover {
+                          opacity: 1;
+                      }
 
-                  /* Create a custom checkbox */
-                  .checkmark {
-                      position: absolute;
-                      top: 0;
-                      left: 0;
-                      height: 20px;
-                      width: 20px;
-                      background-color: #eaeaea;
-                  }
-
-                  /* On mouse-over, add a grey background color */
-                  .container:hover input ~ .checkmark {
-                      background-color: #ccc;
-                  }
-
-                  /* When the checkbox is checked, add a blue background */
-                  .container input:checked ~ .checkmark {
-                      background-color: #2196F3;
-                  }
-
-                  /* Create the checkmark/indicator (hidden when not checked) */
-                  .checkmark:after {
-                      content: "";
-                      position: absolute;
-                      display: none;
-                  }
-
-                  /* Show the checkmark when checked */
-                  .container input:checked ~ .checkmark:after {
-                      display: block;
-                  }
-
-                  /* Style the checkmark/indicator */
-                  .container .checkmark:after {
-                      left: 9px;
-                      top: 5px;
-                      width: 5px;
-                      height: 10px;
-                      border: solid white;
-                      border-width: 0 3px 3px 0;
-                      -webkit-transform: rotate(45deg);
-                      -ms-transform: rotate(45deg);
-                      transform: rotate(45deg);
-                  }
-              </style>
-              <center>
-                  <br/>
-                  <h6>Check all that apply about this location:</h6>
-                  <div style="width:300px;">
-                      <label class="container">Quiet
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-
-                      <label class="container">Loud
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-
-                      <label class="container">Air conditioned
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-
-                      <label class="container">Heated
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-
-                      <label class="container">Pet-friendly
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-
-                      <label class="container">Outdoor-seating
-                          <input type="checkbox">
-                          <span class="checkmark"></span>
-                      </label>
-                  </div>
-              </center>
-          </div>
-          <div id="sendbutton">
-              <center>
-              <button id="activityButton" class="button button3" type="submit" onclick="busyFunc()">Submit</button>
-              <style>
-                  .button {
-                      width: 80px;
-                      height: 26px;
-                      border: none;
-                      border-color: #5cb3fd;
-                      font-size: 16px;
-                      font-family: Helvetica;
-                      color: #5cb3fd;
-                      cursor: pointer;
-                      text-align: center;
-                      opacity: 0.7;
-                      transition: .2s;
-                  }
-
-                  .button:hover {
-                      opacity: 1;
-                  }
-
-                  .button3 {border-radius: 6px;}
-              </style>
-              </center>
+                      .button3 {border-radius: 6px;}
+                  </style>
+              </div>
           </div>
         <br>
+        </center>
+
     </div>
 
 </body>

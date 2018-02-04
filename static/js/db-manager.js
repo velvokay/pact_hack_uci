@@ -40,7 +40,7 @@ function addComment(place, user_name, comment) {
  */
 
 function getAverageBusyRating(place) {
-    const maxRatingAgeAllowedMinutes = 15; // change this if necessary
+    const maxRatingAgeAllowedMinutes = 30; // change this if necessary
 
     return firebase.database().ref('/busy-ratings/' + place).once('value').then(function(snapshot) {
         const snapshotData = snapshot.val();
