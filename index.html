@@ -56,6 +56,8 @@
         var lastSearchTypeWasQuery = false;
         var lastSearchQuery;
 
+        var qTag, lTag, aTag, hTag, pTag, oTag;
+
         $(document).ready(function() {
             $('#gmap-link').click(function() {
                 if ($('#gmap-link').attr('href') == '#') {
@@ -237,6 +239,38 @@
                 });
 
                 google.maps.event.addListener(marker, 'click', function () {
+                    var currentTag = getTags(currentID);
+                    if(currentTag.quiet == true)
+                    {
+                        qTag = "Quiet";
+                    }
+                    else if(currentTag.loud == true)
+                    {
+                        lTag = "Loud"
+                    }
+                    else if(currentTag.ac == true)
+                    {
+                        aTag = "Has AC"
+                    }
+                    else if(currentTag.heat == true)
+                    {
+                        hTag = "Heated"
+                    }
+                    else if(currentTag.pet_friendly == true)
+                    {
+                        pTag = "Pet friendly"
+                    }
+                    else if(currentTag.outdoor_seating == true)
+                    {
+                        oTag = "Outdoor seating"
+                    }
+                    $('.quietTag').html(qTag);
+                    $('.loudTag').html(lTag);
+                    $('.acTag').html(aTag);
+                    $('.heatedTag').html(hTag);
+                    $('.petTag').html(pTag);
+                    $('.outTag').html(oTag);
+
                     selectedMarkerLocation.lat = marker.position.lat();
                     selectedMarkerLocation.lng = marker.position.lng();
 
@@ -395,16 +429,7 @@
               <div class="petTag"> <span class='value'></span></div>
               <div class="outTag"> <span class='value'></span></div>
           </div>
-          <script>
 
-
-              $('.quietTag').html(qTag);
-              $('.loudTag').html(lTag);
-              $('.acTag').html(aTag);
-              $('.heatedTag').html(hTag);
-              $('.petTag').html(pTag);
-              $('.outTag').html(oTag);
-          </script>
 
       <h6>Busy level:</h6>
           <div class="busyLevel"> <span class='value'></span></div>
