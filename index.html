@@ -221,9 +221,26 @@
                     $('#gmap-link').attr('target', '_blank');
                     $('#gmap-link').attr('href', 'https://www.google.com/maps/search/' + encodeURIComponent(currentName) + '/');
 
+                    if ('opening_hours' in place) {
+                        const isOpen = place.opening_hours.open_now;
+
+                        let statusText = 'Open';
+                        let statusColor = 'green';
+                        if (!isOpen) {
+                            statusText = 'Closed';
+                            statusColor = 'red';
+                        }
+                        
+                        $('#is-open-now').html('<span style="color: ' + statusColor + '">' + statusText + ' Now</span>');
+                    }
+                    else {
+                        $('#is-open-now').text('');
+                    }
+
                     google.maps.event.addListener(infowindow, 'closeclick', function() {
                         $('#current-place').text('No Place Selected');
 
+                        $('#is-open-now').text('');
                         $('#gmap-link').removeAttr('target');
                         $('#gmap-link').attr('href', '#');
 
@@ -327,7 +344,7 @@
       <center>
         <br>
       <h4 id="current-place">No Place Selected</h4>
-      <p>(if closing within 2 hours it should say so here like closing in 2 hrs or whatever)</p>
+      <p id="is-open-now"></p>
       <h6>Price range:</h6>
       <h6>Busy level:</h6>
       <a href="#" id="gmap-link">View on Google Maps</a>
