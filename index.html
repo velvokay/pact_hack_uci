@@ -214,16 +214,32 @@
         <div>
             <h3 style="float:left;width:150px">Map view </h3>
             <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Enter restaurant, library, ..." style="height:28px;width:250px">
-                <button class="btn btn-outline-warning btn-sm" type="submit">Search</button>
-            </form>
-        </div>
-        <div id="map"></div>
+              <input class="form-control mr-sm-2" id="usrIn" name="usrIn" type="text" placeholder="Enter restaurant, library, ..." style="height:30px;width:250px">
+              <button class="btn btn-outline-success my-2 my-sm-0" id="btn" name="btn" type="submit" style="height:36px">Search</button>
+          </form>
+          <script
+              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
+              document.getElementById('btn').onclick = function() {
+              var request = {
+                location: userLocation;
+                radius: '500',
+                query: usrIn
+              };
 
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoreYzztWzMx1WPJGS7RDofF3rCuWS79c&libraries=places&callback=initMap">
-        </script>
+              searchServ = new google.maps.places.PlacesService(map);
+              searchServ.textSearch(request, callback);
+            };
+            function callback(results, status) {
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+    for (var i = 0; i < results.length; i++) {
+      var place = results[i];
+      createMarker(results[i]);
+    }
+  }
+}
+          </script>
     </div>
-    
+
     <div style = "color:black">
       <center>
       <h4 id="current-place">No Place Selected</h4>
