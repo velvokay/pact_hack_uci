@@ -375,12 +375,34 @@
         <br>
       <h4 id="current-place">No Place Selected</h4>
       <p id="is-open-now"></p>
-      <h6>Price range:</h6>
+
+          <div id="site-tags">
+              <div class="quietTag"> <span class='value'></span></div>
+              <div class="loudTag"> <span class='value'></span></div>
+              <div class="acTag"> <span class='value'></span></div>
+              <div class="heatedTag"> <span class='value'></span></div>
+              <div class="petTag"> <span class='value'></span></div>
+              <div class="outTag"> <span class='value'></span></div>
+          </div>
+          <script>
+
+
+              $('.quietTag').html(qTag);
+              $('.loudTag').html(lTag);
+              $('.acTag').html(aTag);
+              $('.heatedTag').html(hTag);
+              $('.petTag').html(pTag);
+              $('.outTag').html(oTag);
+          </script>
+
       <h6>Busy level:</h6>
+          <div class="busyLevel"> <span class='value'></span></div>
+
       <a href="#" id="gmap-link">View on Google Maps</a>
           <hr />
           <h4>Currently at this location? Give your input!</h4>
           <h6>How busy is it currently?</h6>
+          <script>$('.busyLevel').html(currentActivity);</script>
       </center>
           <div id="rating">
               <center>
