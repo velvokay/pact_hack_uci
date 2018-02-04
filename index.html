@@ -36,7 +36,7 @@
         var map;
         var markers = [];
         var mapCenter;
-        var howBusy = 'Not very busy';
+        var howBusy;
 
         var previousInfoWindow = null;
         var desiredPlaceTypes = ['bar', 'library', 'cafe', 'gym', 'meal_delivery', 'meal_takeaway', 'park', 'restaurant'];
@@ -179,14 +179,11 @@
 
         }
 
-        function nBusyFunc() {
-            addBusyRating(currentName, 1);
-        }
-        function mBusyFunc() {
-            addBusyRating(currentName, 2);
-        }
-        function vBusyFunc() {
-            addBusyRating(currentName, 3);
+        function busyFunc()
+        {
+            howBusy = document.getElementById("myRange").value;
+            howBusy = parseInt(howBusy);
+            addBusyRating(currentName, howBusy);
         }
     </script>
 </head>
@@ -243,7 +240,7 @@
       <center>
       <h4 id="current-place">No Place Selected</h4>
           <b>How busy is it currently?:</b>
-          <!-- Options for rating business
+            <!--
           <button id="nbusy" class="btn btn-primary" type="submit" onclick="nBusyFunc()">Not busy</button>
           <button id= "mbusy" class="btn btn-primary" type="submit" onclick="mBusyFunc()">Moderately busy</button>
           <button id="vbusy" class="btn btn-primary" type="submit" onclick="vBusyFunc()">Very busy</button>
@@ -296,7 +293,7 @@
               </span>
               <span>
               <div id="sendbutton">
-                  <button class="button button3">SEND</button>
+                  <button id="activityButton" class="button button3" type="submit" onclick="busyFunc()">SEND</button>
                   <style>
                       .button {
                           width: 80px;
