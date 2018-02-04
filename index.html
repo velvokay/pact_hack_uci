@@ -239,38 +239,6 @@
                 });
 
                 google.maps.event.addListener(marker, 'click', function () {
-                    var currentTag = getTags(currentID);
-                    if(currentTag.quiet == true)
-                    {
-                        qTag = "Quiet";
-                    }
-                    else if(currentTag.loud == true)
-                    {
-                        lTag = "Loud"
-                    }
-                    else if(currentTag.ac == true)
-                    {
-                        aTag = "Has AC"
-                    }
-                    else if(currentTag.heat == true)
-                    {
-                        hTag = "Heated"
-                    }
-                    else if(currentTag.pet_friendly == true)
-                    {
-                        pTag = "Pet friendly"
-                    }
-                    else if(currentTag.outdoor_seating == true)
-                    {
-                        oTag = "Outdoor seating"
-                    }
-                    $('.quietTag').html(qTag);
-                    $('.loudTag').html(lTag);
-                    $('.acTag').html(aTag);
-                    $('.heatedTag').html(hTag);
-                    $('.petTag').html(pTag);
-                    $('.outTag').html(oTag);
-
                     selectedMarkerLocation.lat = marker.position.lat();
                     selectedMarkerLocation.lng = marker.position.lng();
 
@@ -279,6 +247,24 @@
                     clearPreviousInfoWindow();
 
                     infowindow.open(map, marker);        
+
+                    function displayTagIfChecked($tagElement, isTagged) {
+                        if (isTagged) {
+                            $tagElement.show();
+                        }
+                        else {
+                            $tagElement.hide();
+                        }
+                    }
+
+                    getTags(currentID).then(function(currentTag) {
+                        displayTagIfChecked($('.quietTag'), currentTag.quiet);
+                        displayTagIfChecked($('.loudTag'), currentTag.loud);
+                        displayTagIfChecked($('.acTag'), currentTag.ac);
+                        displayTagIfChecked($('.heatedTag'), currentTag.heat);
+                        displayTagIfChecked($('.petTag'), currentTag.pet_friendly);
+                        displayTagIfChecked($('.outTag'), currentTag.outdoor_seating);
+                    });
 
                     $('#current-place').text(currentName);
 
@@ -308,6 +294,13 @@
                         $('#gmap-link').removeAttr('target');
                         $('#gmap-link').attr('href', '#');
 
+                        $('.quietTag').hide();
+                        $('.loudTag').hide();
+                        $('.acTag').hide();
+                        $('.heatedTag').hide();
+                        $('.petTag').hide();
+                        $('.outTag').hide();
+
                         currentName = null;
                     });
 
@@ -336,12 +329,16 @@
                 howBusy = document.getElementById("myRange").value;
                 howBusy = parseInt(howBusy);
                 addBusyRating(currentID, howBusy);
+
+                addTags(currentID, getTagCheckboxStates());
                 
                 clearPreviousInfoWindow();
                 previousInfoWindow = null;
 
                 shouldReopenPreviousMarker = true;
                 updateMapAfterCenterChange();
+
+                $('input[type="checkbox"]').prop('checked', false);
 
                 alert('Thanks for submitting your rating!');
             }
@@ -420,14 +417,22 @@
         <br>
       <h4 id="current-place">No Place Selected</h4>
       <p id="is-open-now"></p>
+        <style>
+        #site-tags {
+            margin-bottom: 10px;
+        }
 
+        .quietTag, .loudTag, .acTag, .heatedTag, .petTag, .outTag {
+            display: none;
+        }
+        </style>
           <div id="site-tags">
-              <div class="quietTag"> <span class='value'></span></div>
-              <div class="loudTag"> <span class='value'></span></div>
-              <div class="acTag"> <span class='value'></span></div>
-              <div class="heatedTag"> <span class='value'></span></div>
-              <div class="petTag"> <span class='value'></span></div>
-              <div class="outTag"> <span class='value'></span></div>
+              <span class="quietTag badge badge-default">Quiet</span>
+              <span class="loudTag badge badge-default">Loud</span>
+              <span class="acTag badge badge-default">Air Conditioned</span>
+              <span class="heatedTag badge badge-default">Heated</span>
+              <span class="petTag badge badge-default">Pet Friendly</span>
+              <span class="outTag badge badge-default">Outdoor Seating</span>
           </div>
           
 
