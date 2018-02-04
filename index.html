@@ -44,6 +44,7 @@
         var currentActivity;
 
         var userLocation;
+        var currentID;
 
         var shouldReopenPreviousMarker = false;
         var selectedMarkerLocation = {
@@ -201,7 +202,7 @@
 
             markers.push(marker);
 
-            getAverageBusyRating(place.name).then(function (r) {
+            getAverageBusyRating(place.place_id).then(function (r) {
                 currentActivity = r;
                 if (r <= 1)
                 {
@@ -240,6 +241,7 @@
                     selectedMarkerLocation.lng = marker.position.lng();
 
                     currentName = place.name;
+                    currentID = place.place_id;
                     clearPreviousInfoWindow();
 
                     infowindow.open(map, marker);        
@@ -299,7 +301,7 @@
             if (currentName != null) {
                 howBusy = document.getElementById("myRange").value;
                 howBusy = parseInt(howBusy);
-                addBusyRating(currentName, howBusy);
+                addBusyRating(currentID, howBusy);
                 
                 clearPreviousInfoWindow();
                 previousInfoWindow = null;
